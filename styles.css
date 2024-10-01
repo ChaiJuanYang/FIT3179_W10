@@ -1,0 +1,11 @@
+
+.container {
+    width: 100%; /* Make sure the container takes full width */
+    display: flex; /* Enable Flexbox */
+    justify-content: space-around; /* Space between the two plots */
+    margin-bottom: 20px; /* Add some space between the containers if needed */
+}
+
+.plot {
+    width: 48%; /* Each plot will take up 48% of the width to sit side by side */
+}

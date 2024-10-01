@@ -1,0 +1,90 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "width": 400,
+    "height": 400,
+    "title": "Births per 1,000 Population by State in 2022",
+    "data": {
+      "url": "https://raw.githubusercontent.com/ChaiJuanYang/FIT3179_W9/refs/heads/main/ne_10m_admin_1_states_provinces.json",  
+      "format": {"type": "topojson", "feature": "ne_10m_admin_1_states_provinces"}
+    },
+    "params": [
+      {
+        "name": "birthSlider",
+        "value": 0,
+        "bind": {
+          "input": "range",  
+          "min": 0,          
+          "max": 30,    
+          "step": 1,     
+          "name": "Number of Births per 1000 Population: "
+        }
+      }
+    ],
+    "transform": [
+      {
+        "lookup": "properties.name", 
+        "from": {
+          "data": {
+            "url": "https://raw.githubusercontent.com/ChaiJuanYang/FIT3179_W9/refs/heads/main/df_2022.csv",  
+            "format": {"type": "csv"}
+          },
+          "key": "state",  
+          "fields": ["annual_birth", "population"]
+        }
+      },
+      {
+        "calculate": "datum.annual_birth / datum.population * 1000", 
+        "as": "births_per_1000"
+      },
+      {
+        "calculate": "ceil(datum.births_per_1000)", 
+        "as": "births_per_1000_ceiling"
+      },
+      {
+        "filter": "datum.births_per_1000_ceiling > birthSlider"  
+      }
+    ],
+    "layer": [
+      {
+        "mark": {"type": "geoshape", "stroke": "black"},
+        "encoding": {
+          "color": {
+            "field": "births_per_1000",
+            "type": "quantitative",
+            "scale": {"scheme": "greens"},
+            "legend": {
+              "title": "Births per 1,000 Population",  
+              "labelFontSize": 12,                   
+              "titleFontSize": 10,                   
+              "titleFontWeight": "bold"              
+            }
+          },
+          "tooltip": [
+            {"field": "properties.name", "type": "nominal", "title": "State"}, 
+            {"field": "births_per_1000", "type": "quantitative", "title": "Births per 1,000 Population"},
+            {"field": "births_per_1000_ceiling", "type": "quantitative", "title": "Estimated Births per 1,000 Population"},
+            {"field": "annual_birth", "type": "quantitative", "title": "Total Births"},
+            {"field": "population", "type": "quantitative", "title": "Population"}
+          ]
+        }
+      },
+      {
+        "mark": {
+          "type": "text",
+          "fontSize": 12,
+          "align": "right",
+          "baseline": "bottom",
+          "fontStyle": "italic"
+        },
+        "encoding": {
+          "text": {
+            "value": "Terengganu has the highest birth rate.\n Kuala Lumpur and Penang have the lowest birth rates."
+          },
+          "x": {"value": 500},  
+          "y": {"value": 390},  
+          "color": {"value": "black"}
+        }
+      }
+    ]
+  }
+  
